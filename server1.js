@@ -17,7 +17,7 @@ class FrameEmitter {
       codec: Codec.MJPEG,
       width: 1280,
       height: 720,
-      fps: 30,
+      fps: 15,
     });
     this._callbacks = {};
     this.streamCamera.startCapture().then(() => this._takePic());
@@ -56,6 +56,16 @@ class FrameEmitter {
 
   const videoStream = streamCamera.createStream(); */
 
+// class MyCamera {
+//   constructor() {
+//       if(!this.entity){
+//         this.entity = new FrameEmitter();
+//       }
+
+//   }
+// }
+let frameEmitter = null;
+let users = 0;
 app.get("/stream.mjpg", (req, res) => {
   res.writeHead(200, {
     "Cache-Control":
@@ -76,7 +86,7 @@ app.get("/stream.mjpg", (req, res) => {
       isReady = false;
       console.log("Writing frame: " + frameData.length);
       res.write(
-        "--myboundary\nContent-Type: image/jpg\nContent-length: ${frameData.length}\n\n"
+        `--myboundary\nContent-Type: image/jpg\nContent-length: ${frameData.length}\n\n`
       );
       res.write(frameData, function () {
         isReady = true;
@@ -87,21 +97,30 @@ app.get("/stream.mjpg", (req, res) => {
   };
   /* 
     let frameEmitter = videoStream.on('frame', frameHandler);
-
+  
     req.on('close', () => {
       frameEmitter.removeListener('frame', frameHandler);
       console.log('Connection terminated: ' + req.hostname);
     }); */
-  let frameEmitter = new FrameEmitter();
 
+  if (!frameEmitter) {
+    frameEmitter = new FrameEmitter();
+  }
+
+  users++;
+  console.log("users", users);
   frameEmitter.on(frameHandler);
 
   req.on("close", () => {
     frameEmitter.off(frameHandler);
     console.log("off");
-    frameEmitter.stop().then((data) => {
-      console.log("successfully closed", data);
-    });
+    users--;
+    if (!users) {
+      frameEmitter.stop().then((data) => {
+        console.log("successfully closed", data);
+      });
+      frameEmitter = null;
+    }
     //   if (isVerbose) console.log("Connection terminated: " + req.hostname);
   });
 });

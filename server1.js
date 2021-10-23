@@ -1,8 +1,8 @@
-const { StreamCamera, Codec } = require("pi-camera-connect");
 const express = require("express");
 const app = express();
 const path = require("path");
-let Emitter = require("component-emitter");
+const FrameEmitter = required('./server/FrameEmmiter');
+
 /* app.use(express.static(path.join(__dirname, "./build")));
 
 app.get("/*", function (req, res) {
@@ -11,37 +11,7 @@ app.get("/*", function (req, res) {
 
 app.listen(3000, () => console.log(`Listening on port 3000!`));
 
-class FrameEmitter {
-  constructor() {
-    this.streamCamera = new StreamCamera({
-      codec: Codec.MJPEG,
-      width: 1280,
-      height: 720,
-      fps: 15,
-    });
-    this._callbacks = {};
-    this.streamCamera.startCapture().then(() => this._takePic());
-    this.emitter = new Emitter();
-  }
-  _takePic() {
-    this.lastTime = process.hrtime();
-    this.streamCamera.takeImage().then((img) => this._onFrame(img));
-  }
-  _onFrame(data) {
-    this.emitter.emit("frame", data);
-    this._takePic();
-  }
-  on(fn) {
-    this.emitter.on("frame", fn);
-  }
-  off(fn) {
-    console.log("off", fn);
-    this.emitter.off("frame", fn);
-  }
-  stop() {
-    return this.streamCamera.stopCapture(); // returns a promise!
-  }
-}
+
 // create a singleton emitter
 
 // const runApp = async () => {

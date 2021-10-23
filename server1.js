@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const FrameEmitter = required('./server/FrameEmmiter');
+const FrameEmitter = require("./server/FrameEmmiter");
 
 /* app.use(express.static(path.join(__dirname, "./build")));
 
@@ -10,7 +10,6 @@ app.get("/*", function (req, res) {
 }); */
 
 app.listen(3000, () => console.log(`Listening on port 3000!`));
-
 
 // create a singleton emitter
 
@@ -33,7 +32,8 @@ app.listen(3000, () => console.log(`Listening on port 3000!`));
 //       }
 
 //   }
-// }
+//
+
 let frameEmitter = null;
 let users = 0;
 app.get("/stream.mjpg", (req, res) => {
